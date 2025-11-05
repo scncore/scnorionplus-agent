@@ -3,7 +3,7 @@
 package main
 
 import (
-	"github.com/open-uem/openuem-agent/internal/logger"
+	"github.com/scncore/scnorion-agent/internal/logger"
 )
 
 func main() {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
 )
 
 func RemovePrinter(printerName string) error {

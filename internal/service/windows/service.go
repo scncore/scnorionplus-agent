@@ -6,22 +6,22 @@ import (
 	"log"
 	"time"
 
-	"github.com/open-uem/openuem-agent/internal/agent"
-	"github.com/open-uem/openuem-agent/internal/logger"
+	"github.com/scncore/scnorion-agent/internal/agent"
+	"github.com/scncore/scnorion-agent/internal/logger"
 	"golang.org/x/sys/windows/svc"
 )
 
-type OpenUEMService struct {
-	Logger *logger.OpenUEMLogger
+type scnorionService struct {
+	Logger *logger.scnorionLogger
 }
 
-func NewService(l *logger.OpenUEMLogger) *OpenUEMService {
-	return &OpenUEMService{
+func NewService(l *logger.scnorionLogger) *scnorionService {
+	return &scnorionService{
 		Logger: l,
 	}
 }
 
-func (s *OpenUEMService) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
+func (s *scnorionService) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
 	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown
 	changes <- svc.Status{State: svc.StartPending}
 	changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted}

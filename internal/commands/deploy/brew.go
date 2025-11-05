@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	openuem_runtime "github.com/open-uem/openuem-agent/internal/commands/runtime"
+	scnorion_runtime "github.com/scncore/scnorion-agent/internal/commands/runtime"
 )
 
 func InstallPackage(packageID string) error {
@@ -28,13 +28,13 @@ func InstallPackage(packageID string) error {
 		args = []string{"install", packageID}
 	}
 
-	username, err := openuem_runtime.GetLoggedInUser()
+	username, err := scnorion_runtime.GetLoggedInUser()
 	if err != nil {
 		log.Printf("[ERROR]: could not find the logged in user, reason %v", err)
 		return err
 	}
 
-	if err := openuem_runtime.RunAsUser(username, brewPath, args, false); err != nil {
+	if err := scnorion_runtime.RunAsUser(username, brewPath, args, false); err != nil {
 		log.Printf("[ERROR]: found and error with brew install command, reason %v", err)
 		return err
 	}
@@ -63,13 +63,13 @@ func UpdatePackage(packageID string) error {
 		args = []string{"upgrade", "--force", packageID}
 	}
 
-	username, err := openuem_runtime.GetLoggedInUser()
+	username, err := scnorion_runtime.GetLoggedInUser()
 	if err != nil {
 		log.Printf("[ERROR]: could not find the logged in user, reason %v", err)
 		return err
 	}
 
-	if err := openuem_runtime.RunAsUser(username, brewPath, args, false); err != nil {
+	if err := scnorion_runtime.RunAsUser(username, brewPath, args, false); err != nil {
 		log.Printf("[ERROR]: found and error with brew upgrade command, reason %v", err)
 		return err
 	}
@@ -98,13 +98,13 @@ func UninstallPackage(packageID string) error {
 		args = []string{"uninstall", "--force", packageID}
 	}
 
-	username, err := openuem_runtime.GetLoggedInUser()
+	username, err := scnorion_runtime.GetLoggedInUser()
 	if err != nil {
 		log.Printf("[ERROR]: could not find the logged in user, reason %v", err)
 		return err
 	}
 
-	if err := openuem_runtime.RunAsUser(username, brewPath, args, false); err != nil {
+	if err := scnorion_runtime.RunAsUser(username, brewPath, args, false); err != nil {
 		log.Printf("[ERROR]: found and error with brew remove command, reason %v", err)
 		return err
 	}

@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getApplicationsInfo(debug bool) error {
@@ -45,7 +45,7 @@ func (r *Report) getApplicationsInfo(debug bool) error {
 
 	for p := range strings.SplitSeq(string(out), "\n") {
 		if p != "" && strings.TrimSpace(p) != "Name" {
-			app := openuem_nats.Application{}
+			app := scnorion_nats.Application{}
 			switch os {
 			case "debian", "ubuntu", "linuxmint", "neon":
 				app.Name, app.Version, app.Publisher = getDpkgInfo(p)
@@ -68,7 +68,7 @@ func (r *Report) getApplicationsInfo(debug bool) error {
 	} else {
 		for p := range strings.SplitSeq(string(out), "\n") {
 			if p != "" {
-				app := openuem_nats.Application{}
+				app := scnorion_nats.Application{}
 				data := strings.Split(p, "***")
 				app.Name = strings.TrimSpace(data[0])
 				if len(data) > 1 {
@@ -91,7 +91,7 @@ func (r *Report) getApplicationsInfo(debug bool) error {
 	// } else {
 	// 	for p := range strings.SplitSeq(string(out), "\n") {
 	// 		if p != "" {
-	// 			app := openuem_nats.Application{}
+	// 			app := scnorion_nats.Application{}
 	// 			data := strings.Split(p, "---")
 	// 			app.Name = strings.TrimSpace(data[0])
 	// 			if len(data) > 1 {

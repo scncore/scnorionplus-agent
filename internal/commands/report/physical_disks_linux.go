@@ -7,7 +7,7 @@ import (
 	"log"
 	"os/exec"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 type BlockDevice struct {
@@ -23,7 +23,7 @@ type BlockDevices struct {
 
 func (r *Report) getPhysicalDisksInfo(debug bool) error {
 	var blockDevices BlockDevices
-	r.PhysicalDisks = []openuem_nats.PhysicalDisk{}
+	r.PhysicalDisks = []scnorion_nats.PhysicalDisk{}
 
 	if debug {
 		log.Println("[DEBUG]: physical disk info retrieval started")
@@ -40,7 +40,7 @@ func (r *Report) getPhysicalDisksInfo(debug bool) error {
 
 	for _, pd := range blockDevices.Devices {
 		if pd.Size > 0 {
-			disk := openuem_nats.PhysicalDisk{
+			disk := scnorion_nats.PhysicalDisk{
 				DeviceID:     pd.Name,
 				Model:        pd.Model,
 				SerialNumber: pd.Serial,

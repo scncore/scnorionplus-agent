@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/moby/sys/mountinfo"
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 	"golang.org/x/sys/unix"
 )
 
@@ -47,7 +47,7 @@ func (r *Report) getLogicalDisksFromLinux(debug bool) error {
 				log.Printf("[ERROR]: could not get information for mountpoint %s, reason: %v", m.Mountpoint, err)
 				continue
 			}
-			myDisk := openuem_nats.LogicalDisk{}
+			myDisk := scnorion_nats.LogicalDisk{}
 			myDisk.Label = m.Mountpoint
 			myDisk.Filesystem = m.FSType
 

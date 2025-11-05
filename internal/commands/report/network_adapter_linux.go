@@ -13,8 +13,8 @@ import (
 	"slices"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
 	"github.com/safchain/ethtool"
+	scnorion_nats "github.com/scncore/nats"
 	"github.com/zcalusic/sysinfo"
 )
 
@@ -56,7 +56,7 @@ func (r *Report) getNetworkAdaptersFromLinux() error {
 		return err
 	}
 	for _, i := range ifaces {
-		myNetworkAdapter := openuem_nats.NetworkAdapter{}
+		myNetworkAdapter := scnorion_nats.NetworkAdapter{}
 		myNetworkAdapter.Name = i.Name
 
 		state, err := ethHandle.LinkState(i.Name)

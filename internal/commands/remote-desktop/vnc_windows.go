@@ -8,14 +8,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
-	openuem_utils "github.com/open-uem/utils"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
+	scnorion_utils "github.com/scncore/utils"
 	"golang.org/x/sys/windows/registry"
 	"gopkg.in/ini.v1"
 )
 
 func (rd *RemoteDesktopService) Start(pin string, notifyUser bool) {
-	cwd, err := openuem_utils.GetWd()
+	cwd, err := scnorion_utils.GetWd()
 	if err != nil {
 		log.Printf("[ERROR]: could not get working directory, reason: %v\n", err)
 		return
@@ -24,7 +24,7 @@ func (rd *RemoteDesktopService) Start(pin string, notifyUser bool) {
 	// Show PIN to user if needed
 	if notifyUser {
 		go func() {
-			if err := runtime.RunAsUser(filepath.Join(cwd, "openuem-messenger.exe"), []string{"info", "--message", pin, "--type", "pin"}); err != nil {
+			if err := runtime.RunAsUser(filepath.Join(cwd, "scnorion-messenger.exe"), []string{"info", "--message", pin, "--type", "pin"}); err != nil {
 				log.Printf("[ERROR]: could not show PIN message to user, reason: %v\n", err)
 			}
 		}()
@@ -68,7 +68,7 @@ func (rd *RemoteDesktopService) Stop() {
 	}
 
 	// Create new random PIN
-	pin, err := openuem_utils.GenerateRandomPIN(6)
+	pin, err := scnorion_utils.GenerateRandomPIN(6)
 	if err != nil {
 		log.Printf("[ERROR]: could not generate random PIN, reason: %v\n", err)
 		return

@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getNetworkAdaptersInfo(debug bool) error {
@@ -28,7 +28,7 @@ func (r *Report) getNetworkAdaptersInfo(debug bool) error {
 
 func (r *Report) getNetworkAdaptersFromMac() error {
 	var networkData SPNetworkDataType
-	r.NetworkAdapters = []openuem_nats.NetworkAdapter{}
+	r.NetworkAdapters = []scnorion_nats.NetworkAdapter{}
 
 	out, err := exec.Command("system_profiler", "-json", "SPNetworkDataType").Output()
 	if err != nil {
@@ -44,7 +44,7 @@ func (r *Report) getNetworkAdaptersFromMac() error {
 			continue
 		}
 
-		myNetworkAdapter := openuem_nats.NetworkAdapter{}
+		myNetworkAdapter := scnorion_nats.NetworkAdapter{}
 		myNetworkAdapter.Name = i.Interface
 		myNetworkAdapter.MACAddress = i.Ethernet.MACAddress
 		myNetworkAdapter.Speed = " - "

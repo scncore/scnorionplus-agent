@@ -3,11 +3,11 @@ package report
 import (
 	"fmt"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 type Report struct {
-	openuem_nats.AgentReport
+	scnorion_nats.AgentReport
 }
 
 func (r *Report) logOS() {

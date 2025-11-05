@@ -7,11 +7,11 @@ import (
 	"os/exec"
 	"regexp"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getMemorySlotsInfo(debug bool) error {
-	r.MemorySlots = []openuem_nats.MemorySlot{}
+	r.MemorySlots = []scnorion_nats.MemorySlot{}
 
 	if debug {
 		log.Println("[DEBUG]: memory slots info has been requested")
@@ -25,7 +25,7 @@ func (r *Report) getMemorySlotsInfo(debug bool) error {
 	reg := regexp.MustCompile(`(?:\tLocator: )(.*)`)
 	matches := reg.FindAllStringSubmatch(string(out), -1)
 	for _, v := range matches {
-		mySlot := openuem_nats.MemorySlot{}
+		mySlot := scnorion_nats.MemorySlot{}
 		mySlot.Slot = v[1]
 		r.MemorySlots = append(r.MemorySlots, mySlot)
 	}

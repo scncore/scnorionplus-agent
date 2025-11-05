@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
+	scnorion_nats "github.com/scncore/nats"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
 )
 
 func (r *Report) getPrintersInfo(debug bool) error {
@@ -28,7 +28,7 @@ func (r *Report) getPrintersInfo(debug bool) error {
 }
 
 func (r *Report) getPrintersFromPowershell() error {
-	r.Printers = []openuem_nats.Printer{}
+	r.Printers = []scnorion_nats.Printer{}
 
 	out, err := runtime.RunAsUserWithOutput("powershell", []string{"gwmi", "Win32_Printer | Select Name, Default, PortName, Network, Shared"})
 	if err != nil {
@@ -38,7 +38,7 @@ func (r *Report) getPrintersFromPowershell() error {
 	reg := regexp.MustCompile(`(?:Name     : )(.*)`)
 	matches := reg.FindAllStringSubmatch(string(out), -1)
 	for _, v := range matches {
-		myPrinter := openuem_nats.Printer{}
+		myPrinter := scnorion_nats.Printer{}
 		myPrinter.Name = strings.TrimSuffix(v[1], "\r")
 		r.Printers = append(r.Printers, myPrinter)
 	}
@@ -98,7 +98,7 @@ func (r *Report) getPrintersFromPowershell() error {
 // 		printerStatus
 // 	}
 
-// 	r.Printers = []openuem_nats.Printer{}
+// 	r.Printers = []scnorion_nats.Printer{}
 // 	namespace := `root\cimv2`
 // 	qPrinters := "SELECT Name, Default, PortName, PrinterStatus, Network FROM Win32_Printer"
 
@@ -119,7 +119,7 @@ func (r *Report) getPrintersFromPowershell() error {
 // 	}
 
 // 	for _, v := range printersDst {
-// 		myPrinter := openuem_nats.Printer{}
+// 		myPrinter := scnorion_nats.Printer{}
 // 		myPrinter.Name = v.Name
 // 		myPrinter.Port = v.PortName
 // 		myPrinter.IsDefault = v.Default

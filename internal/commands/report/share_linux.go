@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/open-uem/nats"
+	"github.com/scncore/nats"
 )
 
 func (r *Report) getSharesInfo() error {

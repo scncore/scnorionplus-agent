@@ -12,14 +12,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/open-uem/nats"
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
 	"github.com/pelletier/go-toml/v2"
+	"github.com/scncore/nats"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
 	"github.com/shirou/gopsutil/v3/process"
 )
 
 func (cfg *RustDeskConfig) Configure(config []byte) error {
-	// Unmarshal configuration data sent by OpenUEM
+	// Unmarshal configuration data sent by scnorion
 	var rdConfig nats.RustDesk
 	if err := json.Unmarshal(config, &rdConfig); err != nil {
 		log.Println("[ERROR]: could not unmarshall RustDesk configuration")

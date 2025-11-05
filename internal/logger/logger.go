@@ -2,10 +2,10 @@ package logger
 
 import "os"
 
-type OpenUEMLogger struct {
+type scnorionLogger struct {
 	LogFile *os.File
 }
 
-func (l *OpenUEMLogger) Close() {
+func (l *scnorionLogger) Close() {
 	l.LogFile.Close()
 }

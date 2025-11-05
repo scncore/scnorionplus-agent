@@ -7,11 +7,11 @@ import (
 	"os/exec"
 	"regexp"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getMonitorsInfo(debug bool) error {
-	r.Monitors = []openuem_nats.Monitor{}
+	r.Monitors = []scnorion_nats.Monitor{}
 
 	if debug {
 		log.Println("[DEBUG]: monitors info has been requested")
@@ -25,7 +25,7 @@ func (r *Report) getMonitorsInfo(debug bool) error {
 	reg := regexp.MustCompile(`Serial ID: "\s*(.*?)\s*"`)
 	matches := reg.FindAllStringSubmatch(string(out), -1)
 	for _, v := range matches {
-		myMonitor := openuem_nats.Monitor{}
+		myMonitor := scnorion_nats.Monitor{}
 		if v[1] == "" || v[1] == "0" {
 			myMonitor.Serial = "Unknown"
 		} else {

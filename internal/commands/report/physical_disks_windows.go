@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 type physicalDisk struct {
@@ -33,7 +33,7 @@ func (r *Report) getPhysicalDisksFromWMI(debug bool) error {
 		return err
 	}
 	for _, v := range disksDst {
-		myDisk := openuem_nats.PhysicalDisk{}
+		myDisk := scnorion_nats.PhysicalDisk{}
 
 		if v.Size != 0 {
 			myDisk.DeviceID = strings.TrimSpace(v.DeviceID)

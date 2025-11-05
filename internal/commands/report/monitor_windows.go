@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getMonitorsInfo(debug bool) error {
@@ -26,7 +26,7 @@ func (r *Report) getMonitorsInfo(debug bool) error {
 		YearOfManufacture uint16
 	}
 
-	r.Monitors = []openuem_nats.Monitor{}
+	r.Monitors = []scnorion_nats.Monitor{}
 
 	namespace := `root\wmi`
 	qMonitors := "SELECT ManufacturerName, SerialNumberID, UserFriendlyName, WeekOfManufacture, YearOfManufacture FROM WmiMonitorID"
@@ -38,7 +38,7 @@ func (r *Report) getMonitorsInfo(debug bool) error {
 		return err
 	}
 	for _, v := range monitorDst {
-		myMonitor := openuem_nats.Monitor{}
+		myMonitor := scnorion_nats.Monitor{}
 		myMonitor.Manufacturer = convertInt32ArrayToString(v.ManufacturerName)
 		myMonitor.Model = convertInt32ArrayToString(v.UserFriendlyName)
 		myMonitor.Serial = convertInt32ArrayToString(v.SerialNumberID)

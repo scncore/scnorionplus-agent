@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/open-uem/nats"
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
+	"github.com/scncore/nats"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
 )
 
 func (r *Report) getSystemUpdateInfo() error {

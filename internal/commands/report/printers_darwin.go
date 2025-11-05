@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getPrintersInfo(debug bool) error {
@@ -28,7 +28,7 @@ func (r *Report) getPrintersInfo(debug bool) error {
 
 func (r *Report) getPrintersFromMac() error {
 	var printerData SPPrintersDataType
-	r.Printers = []openuem_nats.Printer{}
+	r.Printers = []scnorion_nats.Printer{}
 
 	out, err := exec.Command("system_profiler", "-json", "SPPrintersDataType").Output()
 	if err != nil {
@@ -45,7 +45,7 @@ func (r *Report) getPrintersFromMac() error {
 	}
 
 	for _, printer := range printerData.SPPrintersDataType {
-		myPrinter := openuem_nats.Printer{}
+		myPrinter := scnorion_nats.Printer{}
 		myPrinter.Name = strings.TrimSpace(printer.Name)
 		myPrinter.IsDefault = strings.Contains(printer.Default, "yes")
 		myPrinter.Port = printer.URI

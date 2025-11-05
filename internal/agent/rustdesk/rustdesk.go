@@ -12,8 +12,8 @@ import (
 	"strings"
 
 	"github.com/nats-io/nats.go"
-	openuem_nats "github.com/open-uem/nats"
 	"github.com/pelletier/go-toml/v2"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 type RustDeskUser struct {
@@ -66,7 +66,7 @@ func (cfg *RustDeskConfig) SetRustDeskPassword(config []byte) error {
 	// this password is encrypted as soon as the RustDesk app is
 
 	// Unmarshal configuration data
-	var rdConfig openuem_nats.RustDesk
+	var rdConfig scnorion_nats.RustDesk
 	if err := json.Unmarshal(config, &rdConfig); err != nil {
 		log.Println("[ERROR]: could not unmarshall RustDesk configuration")
 		return err
@@ -221,7 +221,7 @@ func CopyFile(src, dst string) error {
 }
 
 func RustDeskRespond(msg *nats.Msg, id string, errMessage string) {
-	result := openuem_nats.RustDeskResult{
+	result := scnorion_nats.RustDeskResult{
 		RustDeskID: id,
 		Error:      errMessage,
 	}

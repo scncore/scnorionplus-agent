@@ -8,21 +8,21 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/open-uem/openuem-agent/internal/agent"
-	"github.com/open-uem/openuem-agent/internal/logger"
+	"github.com/scncore/scnorion-agent/internal/agent"
+	"github.com/scncore/scnorion-agent/internal/logger"
 )
 
-type OpenUEMService struct {
-	Logger *logger.OpenUEMLogger
+type scnorionService struct {
+	Logger *logger.scnorionLogger
 }
 
-func NewService(l *logger.OpenUEMLogger) *OpenUEMService {
-	return &OpenUEMService{
+func NewService(l *logger.scnorionLogger) *scnorionService {
+	return &scnorionService{
 		Logger: l,
 	}
 }
 
-func (s *OpenUEMService) Execute() {
+func (s *scnorionService) Execute() {
 	// Get new agent
 	a := agent.New()
 

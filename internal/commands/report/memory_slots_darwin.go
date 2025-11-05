@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"strconv"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 type SPMemoryDataTypeIntel struct {
@@ -48,7 +48,7 @@ func (r *Report) getMemorySlotsInfo(debug bool) error {
 	var memoryDataIntel SPMemoryDataTypeIntel
 	var memoryDataTypeAppleSilicon SPMemoryDataTypeAppleSilicon
 
-	r.MemorySlots = []openuem_nats.MemorySlot{}
+	r.MemorySlots = []scnorion_nats.MemorySlot{}
 
 	if debug {
 		log.Println("[DEBUG]: memory slots info has been requested")
@@ -66,7 +66,7 @@ func (r *Report) getMemorySlotsInfo(debug bool) error {
 
 		for _, data := range memoryDataIntel.SPMemoryDataType {
 			for _, slot := range data.Items {
-				mySlot := openuem_nats.MemorySlot{}
+				mySlot := scnorion_nats.MemorySlot{}
 				mySlot.Slot = slot.Name
 				mySlot.Manufacturer = slot.Manufacturer
 				mySlot.MemoryType = slot.MemoryType
@@ -83,7 +83,7 @@ func (r *Report) getMemorySlotsInfo(debug bool) error {
 		}
 
 		for index, slot := range memoryDataTypeAppleSilicon.SPMemoryDataType {
-			mySlot := openuem_nats.MemorySlot{}
+			mySlot := scnorion_nats.MemorySlot{}
 			mySlot.Slot = strconv.Itoa(index)
 			mySlot.Manufacturer = slot.Manufacturer
 			mySlot.MemoryType = slot.MemoryType

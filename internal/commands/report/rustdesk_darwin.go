@@ -19,8 +19,8 @@ func (r *Report) hasRustDesk(debug bool) {
 
 	// TODO - brew location
 	// else {
-	// 	flatpakOpenUEMPath := "/var/lib/flatpak/exports/bin/com.rustdesk.RustDesk"
-	// 	if _, err := os.Stat(flatpakOpenUEMPath); err == nil {
+	// 	flatpakscnorionPath := "/var/lib/flatpak/exports/bin/com.rustdesk.RustDesk"
+	// 	if _, err := os.Stat(flatpakscnorionPath); err == nil {
 	// 		r.HasRustDesk = true
 	// 	} else {
 	// 		// Get current user logged in

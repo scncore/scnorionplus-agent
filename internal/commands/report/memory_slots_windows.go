@@ -8,7 +8,7 @@ import (
 	"log"
 	"strconv"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getMemorySlotsInfo(debug bool) error {
@@ -28,7 +28,7 @@ func (r *Report) getMemorySlotsInfo(debug bool) error {
 		Manufacturer         string
 	}
 
-	r.MemorySlots = []openuem_nats.MemorySlot{}
+	r.MemorySlots = []scnorion_nats.MemorySlot{}
 
 	namespace := `root\cimv2`
 	qMonitors := "SELECT DeviceLocator, SerialNumber, PartNumber, Capacity, ConfiguredClockSpeed, Manufacturer, SMBIOSMemoryType FROM Win32_PhysicalMemory"
@@ -40,7 +40,7 @@ func (r *Report) getMemorySlotsInfo(debug bool) error {
 		return err
 	}
 	for _, v := range slotsDst {
-		mySlot := openuem_nats.MemorySlot{}
+		mySlot := scnorion_nats.MemorySlot{}
 		mySlot.Slot = v.DeviceLocator
 		mySlot.PartNumber = v.PartNumber
 		mySlot.SerialNumber = v.SerialNumber

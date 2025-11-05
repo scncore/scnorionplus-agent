@@ -1,12 +1,12 @@
-# OpenUEM Agent
+# scnorion Agent
 
-This repository contains the source code for the OpenUEM Agent
+This repository contains the source code for the scnorion Agent
 
-Agents are responsible for gathering and reporting information about the endpoints to OpenUEM. Agents are also responsible for providing an SFTP server and a VNC proxy.
+Agents are responsible for gathering and reporting information about the endpoints to scnorion. Agents are also responsible for providing an SFTP server and a VNC proxy.
 
 Agents send its reports to Agents workers using NATS messages. Agents workers will store the information in the database
 
-When an agent is installed on an endpoint, it will remain in a "Waiting for admission" state until an administrator validates that this agent can be managed from OpenUEM. When the agent is admitted, a digital certificate is provided to the agent so it can secure its services.
+When an agent is installed on an endpoint, it will remain in a "Waiting for admission" state until an administrator validates that this agent can be managed from scnorion. When the agent is admitted, a digital certificate is provided to the agent so it can secure its services.
 
 An agent can be disabled if we don't want to receive new reports.
 
@@ -19,8 +19,8 @@ Agents use several digital certificates, and associated private keys, to perform
 
 Agents uses WinGet to install/uninstall packages and configure some settings (registry, local user, local groups...)
 
-OpenUEM console shows the information saved by the workers.
+scnorion console shows the information saved by the workers.
 
-![OpenUEM Console](https://openuem.eu/assets/images/agents_list-37a01f840c883ea4f98f30a199845953.png)
+![scnorion Console](https://scnorion.eu/assets/images/agents_list-37a01f840c883ea4f98f30a199845953.png)
 
-Right now OpenUEM only provides agents for Windows and Debian/Ubuntu Linux but more agents will be released.
+Right now scnorion only provides agents for Windows and Debian/Ubuntu Linux but more agents will be released.

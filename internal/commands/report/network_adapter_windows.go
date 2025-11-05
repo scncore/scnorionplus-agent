@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 type networkAdapterInfo struct {
@@ -61,7 +61,7 @@ func (r *Report) getNetworkAdaptersFromWMI() error {
 		return err
 	}
 	for _, v := range networkInfoDst {
-		myNetworkAdapter := openuem_nats.NetworkAdapter{}
+		myNetworkAdapter := scnorion_nats.NetworkAdapter{}
 
 		if v.NetConnectionStatus == 2 {
 			var networkAdapterDst []networkAdapterConfiguration

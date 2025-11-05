@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
 	"github.com/zcalusic/sysinfo"
 )
 
@@ -106,8 +106,8 @@ func GetSupportedRemoteDesktopService(agentOS, sid, proxyPort string) (*RemoteDe
 				if err != nil {
 					return err
 				}
-				openuemDir := filepath.Join(homeDir, ".openuem")
-				path := filepath.Join(openuemDir, "x11vncpasswd")
+				scnorionDir := filepath.Join(homeDir, ".scnorion")
+				path := filepath.Join(scnorionDir, "x11vncpasswd")
 
 				// Feat #109 detect if x11vnc is a wrapper of x0vncserver (OpenSUSE Leap)
 				if _, err := os.Stat("/usr/bin/x0vncserver"); err == nil {
@@ -149,12 +149,12 @@ func GetSupportedRemoteDesktopService(agentOS, sid, proxyPort string) (*RemoteDe
 					return err
 				}
 
-				openuemDir := filepath.Join(homeDir, ".openuem")
-				if err := createOpenUEMDir(openuemDir, uid, gid); err != nil {
+				scnorionDir := filepath.Join(homeDir, ".scnorion")
+				if err := createscnorionDir(scnorionDir, uid, gid); err != nil {
 					return err
 				}
 
-				path := filepath.Join(openuemDir, "x11vncpasswd")
+				path := filepath.Join(scnorionDir, "x11vncpasswd")
 
 				if err := os.Remove(path); err != nil {
 					log.Println("[INFO]: could not remove vnc password")
@@ -174,12 +174,12 @@ func GetSupportedRemoteDesktopService(agentOS, sid, proxyPort string) (*RemoteDe
 					return err
 				}
 
-				openuemDir := filepath.Join(homeDir, ".openuem")
-				if err := os.RemoveAll(openuemDir); err != nil {
-					log.Println("[ERROR]: could not remove .openuem directory")
+				scnorionDir := filepath.Join(homeDir, ".scnorion")
+				if err := os.RemoveAll(scnorionDir); err != nil {
+					log.Println("[ERROR]: could not remove .scnorion directory")
 				}
 
-				log.Println("[INFO]: PIN removed from ", openuemDir)
+				log.Println("[INFO]: PIN removed from ", scnorionDir)
 				return nil
 			},
 		},
@@ -207,16 +207,16 @@ func GetSupportedRemoteDesktopService(agentOS, sid, proxyPort string) (*RemoteDe
 					return err
 				}
 
-				openuemDir := filepath.Join(homeDir, ".openuem")
+				scnorionDir := filepath.Join(homeDir, ".scnorion")
 
-				rdpCert := filepath.Join(openuemDir, "rdp-server.cer")
-				rdpKey := filepath.Join(openuemDir, "rdp-server.key")
+				rdpCert := filepath.Join(scnorionDir, "rdp-server.cer")
+				rdpKey := filepath.Join(scnorionDir, "rdp-server.key")
 
-				if err := createOpenUEMDir(openuemDir, uid, gid); err != nil {
+				if err := createscnorionDir(scnorionDir, uid, gid); err != nil {
 					return err
 				}
 
-				if err := copyCertFile("/etc/openuem-agent/certificates/server.cer", rdpCert, uid, gid); err != nil {
+				if err := copyCertFile("/etc/scnorion-agent/certificates/server.cer", rdpCert, uid, gid); err != nil {
 					return err
 				}
 
@@ -225,7 +225,7 @@ func GetSupportedRemoteDesktopService(agentOS, sid, proxyPort string) (*RemoteDe
 					return errors.New("could not set set-tls-cert")
 				}
 
-				if err := copyCertFile("/etc/openuem-agent/certificates/server.key", rdpKey, uid, gid); err != nil {
+				if err := copyCertFile("/etc/scnorion-agent/certificates/server.key", rdpKey, uid, gid); err != nil {
 					return err
 				}
 
@@ -253,9 +253,9 @@ func GetSupportedRemoteDesktopService(agentOS, sid, proxyPort string) (*RemoteDe
 					return err
 				}
 
-				openuemDir := filepath.Join(homeDir, ".openuem")
-				if err := os.RemoveAll(openuemDir); err != nil {
-					log.Println("[ERROR]: could not remove .openuem directory")
+				scnorionDir := filepath.Join(homeDir, ".scnorion")
+				if err := os.RemoveAll(scnorionDir); err != nil {
+					log.Println("[ERROR]: could not remove .scnorion directory")
 				}
 
 				err = runtime.RunAsUserWithMachineCtl(username, "/usr/bin/grdctl rdp disable")
@@ -276,7 +276,7 @@ func GetSupportedRemoteDesktopService(agentOS, sid, proxyPort string) (*RemoteDe
 				return nil
 			},
 			SavePIN: func(pin string) error {
-				command := fmt.Sprintf("/usr/bin/grdctl rdp set-credentials openuem %s", pin)
+				command := fmt.Sprintf("/usr/bin/grdctl rdp set-credentials scnorion %s", pin)
 				err = runtime.RunAsUserWithMachineCtl(username, command)
 				if err != nil {
 					return errors.New("could not set rdp credentials")
@@ -371,8 +371,8 @@ func notifyPINToUser(pin string) error {
 	}
 
 	// Reference: https://ubuntuforums.org/showthread.php?t=2348109 for font size
-	// "--icon", "/opt/openuem-agent/bin/icon.png" is not supported by Debian
-	args := []string{"--info", "--title", "OpenUEM Remote Assistance", "--text", fmt.Sprintf("<span foreground='blue' size='xx-large'>PIN: %s</span>", pin), "--width", "300", "--timeout", "30"}
+	// "--icon", "/opt/scnorion-agent/bin/icon.png" is not supported by Debian
+	args := []string{"--info", "--title", "scnorion Remote Assistance", "--text", fmt.Sprintf("<span foreground='blue' size='xx-large'>PIN: %s</span>", pin), "--width", "300", "--timeout", "30"}
 	if err := runtime.RunAsUser(username, "zenity", args, true); err != nil {
 		return err
 	}
@@ -380,23 +380,23 @@ func notifyPINToUser(pin string) error {
 	return nil
 }
 
-func createOpenUEMDir(openuemDir string, uid, gid int) error {
-	if err := os.MkdirAll(openuemDir, 0770); err != nil {
-		log.Printf("[ERROR]: could not create openuem dir for current user, reason: %v", err)
+func createscnorionDir(scnorionDir string, uid, gid int) error {
+	if err := os.MkdirAll(scnorionDir, 0770); err != nil {
+		log.Printf("[ERROR]: could not create scnorion dir for current user, reason: %v", err)
 		return err
 	}
 
-	if err := os.Chmod(openuemDir, 0770); err != nil {
+	if err := os.Chmod(scnorionDir, 0770); err != nil {
 		return err
 	}
 
-	if err := os.Chown(openuemDir, uid, gid); err != nil {
+	if err := os.Chown(scnorionDir, uid, gid); err != nil {
 		return err
 	}
 	return nil
 }
 
-// "/etc/openuem-agent/certificates/server.cer"
+// "/etc/scnorion-agent/certificates/server.cer"
 func copyCertFile(src, dst string, uid, gid int) error {
 	if err := copyFileContents(src, dst); err != nil {
 		return err

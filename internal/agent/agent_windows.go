@@ -22,13 +22,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
-	openuem_nats "github.com/open-uem/nats"
-	"github.com/open-uem/openuem-agent/internal/commands/deploy"
-	rd "github.com/open-uem/openuem-agent/internal/commands/remote-desktop"
-	"github.com/open-uem/openuem-agent/internal/commands/report"
-	"github.com/open-uem/openuem-agent/internal/commands/sftp"
-	openuem_utils "github.com/open-uem/utils"
-	"github.com/open-uem/wingetcfg/wingetcfg"
+	scnorion_nats "github.com/scncore/nats"
+	"github.com/scncore/scnorion-agent/internal/commands/deploy"
+	rd "github.com/scncore/scnorion-agent/internal/commands/remote-desktop"
+	"github.com/scncore/scnorion-agent/internal/commands/report"
+	"github.com/scncore/scnorion-agent/internal/commands/sftp"
+	scnorion_utils "github.com/scncore/utils"
+	"github.com/scncore/wingetcfg/wingetcfg"
 	"golang.org/x/mod/semver"
 	"gopkg.in/yaml.v3"
 )
@@ -95,7 +95,7 @@ func (a *Agent) Start() {
 	}
 
 	// Try to connect to NATS server and start a reconnect job if failed
-	a.NATSConnection, err = openuem_nats.ConnectWithNATS(a.Config.NATSServers, a.Config.AgentCert, a.Config.AgentKey, a.Config.CACert)
+	a.NATSConnection, err = scnorion_nats.ConnectWithNATS(a.Config.NATSServers, a.Config.AgentCert, a.Config.AgentKey, a.Config.CACert)
 	if err != nil {
 		log.Printf("[ERROR]: %v", err)
 		a.startNATSConnectJob()
@@ -151,7 +151,7 @@ func (a *Agent) startNATSConnectJob() error {
 		),
 		gocron.NewTask(
 			func() {
-				a.NATSConnection, err = openuem_nats.ConnectWithNATS(a.Config.NATSServers, a.Config.AgentCert, a.Config.AgentKey, a.Config.CACert)
+				a.NATSConnection, err = scnorion_nats.ConnectWithNATS(a.Config.NATSServers, a.Config.AgentCert, a.Config.AgentKey, a.Config.CACert)
 				if err != nil {
 					return
 				}
@@ -176,7 +176,7 @@ func (a *Agent) startNATSConnectJob() error {
 }
 
 func (a *Agent) StartRemoteDesktopSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.startvnc."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.startvnc."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 
 		loggedOnUser, err := report.GetLoggedOnUsername()
 		if err != nil {
@@ -204,7 +204,7 @@ func (a *Agent) StartRemoteDesktopSubscribe() error {
 		}
 
 		// Unmarshal data
-		var rdConn openuem_nats.VNCConnection
+		var rdConn scnorion_nats.VNCConnection
 		if err := json.Unmarshal(msg.Data, &rdConn); err != nil {
 			log.Println("[ERROR]: could not unmarshall Remote Desktop connection")
 			return
@@ -226,13 +226,13 @@ func (a *Agent) StartRemoteDesktopSubscribe() error {
 }
 
 func (a *Agent) RebootSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.reboot."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.reboot."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 		log.Println("[INFO]: reboot request received")
 		if err := msg.Respond([]byte("Reboot!")); err != nil {
 			log.Printf("[ERROR]: could not respond to agent reboot message, reason: %v\n", err)
 		}
 
-		action := openuem_nats.RebootOrRestart{}
+		action := scnorion_nats.RebootOrRestart{}
 		if err := json.Unmarshal(msg.Data, &action); err != nil {
 			log.Printf("[ERROR]: could not unmarshal to agent reboot message, reason: %v\n", err)
 			return
@@ -257,14 +257,14 @@ func (a *Agent) RebootSubscribe() error {
 }
 
 func (a *Agent) PowerOffSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.poweroff."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.poweroff."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 		log.Println("[INFO]: power off request received")
 		if err := msg.Respond([]byte("Power Off!")); err != nil {
 			log.Printf("[ERROR]: could not respond to agent power off message, reason: %v\n", err)
 			return
 		}
 
-		action := openuem_nats.RebootOrRestart{}
+		action := scnorion_nats.RebootOrRestart{}
 		if err := json.Unmarshal(msg.Data, &action); err != nil {
 			log.Printf("[ERROR]: could not unmarshal to agent power off message, reason: %v\n", err)
 			return
@@ -317,7 +317,7 @@ func (a *Agent) GetWingetConfigureProfiles() {
 
 	profiles := []ProfileConfig{}
 
-	profileRequest := openuem_nats.CfgProfiles{
+	profileRequest := scnorion_nats.CfgProfiles{
 		AgentID: a.Config.UUID,
 	}
 
@@ -384,7 +384,7 @@ func (a *Agent) ApplyConfiguration(profileID int, config []byte, exclusions, dep
 		return err
 	}
 
-	cwd, err := openuem_utils.GetWd()
+	cwd, err := scnorion_utils.GetWd()
 	if err != nil {
 		log.Printf("[ERROR]: could not get working directory, reason %v", err)
 		return err
@@ -399,7 +399,7 @@ func (a *Agent) ApplyConfiguration(profileID int, config []byte, exclusions, dep
 			return err
 		}
 
-		// Notify, OpenUEM that a new package has been deployed due to winget configure
+		// Notify, scnorion that a new package has been deployed due to winget configure
 		if err := a.SendWinGetCfgDeploymentReport("Microsoft.PowerShell", "PowerShell 7-x64", "install"); err != nil {
 			return err
 		}
@@ -429,7 +429,7 @@ func (a *Agent) ApplyConfiguration(profileID int, config []byte, exclusions, dep
 				return err
 			}
 
-			// Notify, OpenUEM that a new package has been deployed due to winget configure
+			// Notify, scnorion that a new package has been deployed due to winget configure
 			if err := a.SendWinGetCfgDeploymentReport("Microsoft.PowerShell", "PowerShell 7-x64", "install"); err != nil {
 				return err
 			}
@@ -473,7 +473,7 @@ func (a *Agent) ApplyConfiguration(profileID int, config []byte, exclusions, dep
 
 	errData := ""
 
-	// Remove openuem powershell config and execute them
+	// Remove scnorion powershell config and execute them
 	scripts := deploy.RemovePowershellScriptsFromCfg(&cfg)
 	for name, taskConfig := range scripts {
 		if err := a.ReadConfig(); err != nil {
@@ -525,7 +525,7 @@ func (a *Agent) ApplyConfiguration(profileID int, config []byte, exclusions, dep
 
 	// Run configuration
 	scriptPath := filepath.Join(cwd, "powershell", "configure.ps1")
-	configPath := filepath.Join(cwd, "powershell", fmt.Sprintf("openuem.%s.winget", uuid.New()))
+	configPath := filepath.Join(cwd, "powershell", fmt.Sprintf("scnorion.%s.winget", uuid.New()))
 	if err := cfg.WriteConfigFile(configPath); err != nil {
 		return err
 	}
@@ -550,7 +550,7 @@ func (a *Agent) ApplyConfiguration(profileID int, config []byte, exclusions, dep
 	executeErr := cmd.Run()
 	if executeErr != nil {
 		log.Println("[ERROR]: configuration profile could not be applied")
-		data, err := os.ReadFile("C:\\Program Files\\OpenUEM Agent\\logs\\wingetcfg.txt")
+		data, err := os.ReadFile("C:\\Program Files\\scnorion Agent\\logs\\wingetcfg.txt")
 		if err != nil {
 			log.Println("[ERROR]: could not read wingetcfg.txt log")
 		}
@@ -599,8 +599,8 @@ func (a *Agent) CheckIfCfgPackagesInstalled(cfg wingetcfg.WinGetCfg) {
 }
 
 func (a *Agent) SendWinGetCfgDeploymentReport(packageID, packageName, action string) error {
-	// Notify, OpenUEM that a new package has been deployed
-	deployment := openuem_nats.DeployAction{
+	// Notify, scnorion that a new package has been deployed
+	deployment := scnorion_nats.DeployAction{
 		AgentId:     a.Config.UUID,
 		PackageId:   packageID,
 		PackageName: packageName,
@@ -622,7 +622,7 @@ func (a *Agent) SendWinGetCfgDeploymentReport(packageID, packageName, action str
 
 func (a *Agent) SendWinGetCfgExcludedPackage(packageIDs []string) {
 	for _, id := range packageIDs {
-		deployment := openuem_nats.DeployAction{
+		deployment := scnorion_nats.DeployAction{
 			AgentId:   a.Config.UUID,
 			PackageId: id,
 		}
@@ -647,7 +647,7 @@ func (a *Agent) RescheduleWingetConfigureTask() {
 func (a *Agent) NewConfigSubscribe() error {
 	_, err := a.NATSConnection.Subscribe("agent.newconfig", func(msg *nats.Msg) {
 
-		config := openuem_nats.Config{}
+		config := scnorion_nats.Config{}
 		err := json.Unmarshal(msg.Data, &config)
 		if err != nil {
 			log.Printf("[ERROR]: could not get new config to apply, reason: %v\n", err)
@@ -692,7 +692,7 @@ func (a *Agent) NewConfigSubscribe() error {
 
 func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 
-	data := openuem_nats.AgentCertificateData{}
+	data := scnorion_nats.AgentCertificateData{}
 
 	if err := json.Unmarshal(msg.Data(), &data); err != nil {
 		log.Printf("[ERROR]: could not unmarshal agent certificate data, reason: %v\n", err)
@@ -702,7 +702,7 @@ func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 		return
 	}
 
-	wd, err := openuem_utils.GetWd()
+	wd, err := scnorion_utils.GetWd()
 	if err != nil {
 		log.Printf("[ERROR]: could not get working directory, reason: %v\n", err)
 		if err := msg.Ack(); err != nil {
@@ -730,7 +730,7 @@ func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 		return
 	}
 
-	err = openuem_utils.SavePrivateKey(privateKey, keyPath)
+	err = scnorion_utils.SavePrivateKey(privateKey, keyPath)
 	if err != nil {
 		log.Printf("[ERROR]: could not save agent private key, reason: %v\n", err)
 		if err := msg.Ack(); err != nil {
@@ -741,7 +741,7 @@ func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 	log.Printf("[INFO]: Agent private key saved in %s", keyPath)
 
 	certPath := filepath.Join(wd, "certificates", "server.cer")
-	err = openuem_utils.SaveCertificate(data.CertBytes, certPath)
+	err = scnorion_utils.SaveCertificate(data.CertBytes, certPath)
 	if err != nil {
 		log.Printf("[ERROR]: could not save agent certificate, reason: %v\n", err)
 		if err := msg.Ack(); err != nil {
@@ -764,12 +764,12 @@ func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 
 func (a *Agent) GetServerCertificate() {
 
-	cwd, err := openuem_utils.GetWd()
+	cwd, err := scnorion_utils.GetWd()
 	if err != nil {
 		log.Println("[ERROR]: could not get current working directory")
 	}
 	serverCertPath := filepath.Join(cwd, "certificates", "server.cer")
-	_, err = openuem_utils.ReadPEMCertificate(serverCertPath)
+	_, err = scnorion_utils.ReadPEMCertificate(serverCertPath)
 	if err != nil {
 		log.Printf("[ERROR]: could not read server certificate")
 	} else {
@@ -777,7 +777,7 @@ func (a *Agent) GetServerCertificate() {
 	}
 
 	serverKeyPath := filepath.Join(cwd, "certificates", "server.key")
-	_, err = openuem_utils.ReadPEMPrivateKey(serverKeyPath)
+	_, err = scnorion_utils.ReadPEMPrivateKey(serverKeyPath)
 	if err != nil {
 		log.Printf("[ERROR]: could not read server private key")
 	} else {

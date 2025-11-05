@@ -19,16 +19,16 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
-	openuem_nats "github.com/open-uem/nats"
-	"github.com/open-uem/openuem-agent/internal/agent/rustdesk"
-	"github.com/open-uem/openuem-agent/internal/commands/deploy"
-	"github.com/open-uem/openuem-agent/internal/commands/printers"
-	remotedesktop "github.com/open-uem/openuem-agent/internal/commands/remote-desktop"
-	"github.com/open-uem/openuem-agent/internal/commands/report"
-	"github.com/open-uem/openuem-agent/internal/commands/sftp"
-	ansiblecfg "github.com/open-uem/openuem-ansible-config/ansible"
-	openuem_utils "github.com/open-uem/utils"
-	"github.com/open-uem/wingetcfg/wingetcfg"
+	scnorion_nats "github.com/scncore/nats"
+	"github.com/scncore/scnorion-agent/internal/agent/rustdesk"
+	"github.com/scncore/scnorion-agent/internal/commands/deploy"
+	"github.com/scncore/scnorion-agent/internal/commands/printers"
+	remotedesktop "github.com/scncore/scnorion-agent/internal/commands/remote-desktop"
+	"github.com/scncore/scnorion-agent/internal/commands/report"
+	"github.com/scncore/scnorion-agent/internal/commands/sftp"
+	ansiblecfg "github.com/scncore/scnorion-ansible-config/ansible"
+	scnorion_utils "github.com/scncore/utils"
+	"github.com/scncore/wingetcfg/wingetcfg"
 	"gopkg.in/ini.v1"
 )
 
@@ -50,7 +50,7 @@ type Agent struct {
 }
 
 type JSONActions struct {
-	Actions []openuem_nats.DeployAction `json:"actions"`
+	Actions []scnorion_nats.DeployAction `json:"actions"`
 }
 
 type ProfileConfig struct {
@@ -71,7 +71,7 @@ func New() Agent {
 		log.Fatalf("[FATAL]: could not create the scheduler: %v", err)
 	}
 
-	// Read Agent Config from openuem.ini file
+	// Read Agent Config from scnorion.ini file
 	if err := agent.ReadConfig(); err != nil {
 		log.Fatalf("[FATAL]: could not read agent config: %v", err)
 	}
@@ -84,13 +84,13 @@ func New() Agent {
 		}
 	}
 
-	caCert, err := openuem_utils.ReadPEMCertificate(agent.Config.CACert)
+	caCert, err := scnorion_utils.ReadPEMCertificate(agent.Config.CACert)
 	if err != nil {
 		log.Fatalf("[FATAL]: could not read CA certificate")
 	}
 	agent.CACert = caCert
 
-	agent.SFTPCert, err = openuem_utils.ReadPEMCertificate(agent.Config.SFTPCert)
+	agent.SFTPCert, err = scnorion_utils.ReadPEMCertificate(agent.Config.SFTPCert)
 	if err != nil {
 		log.Fatalf("[FATAL]: could not read sftp certificate")
 	}
@@ -138,7 +138,7 @@ func (a *Agent) RunReport() *report.Report {
 		log.Println("[WARN]: agent has no IP address, report won't be sent and we're flagging this so the watchdog can restart the service")
 
 		// Get conf file
-		configFile := openuem_utils.GetAgentConfigFile()
+		configFile := scnorion_utils.GetAgentConfigFile()
 
 		// Open ini file
 		cfg, err := ini.Load(configFile)
@@ -389,7 +389,7 @@ func (a *Agent) RunReportHandler(msg jetstream.Msg) {
 }
 
 func (a *Agent) StopRemoteDesktopSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.stopvnc."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.stopvnc."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 		if err := msg.Respond([]byte("Remote Desktop service stopped!")); err != nil {
 			log.Printf("[ERROR]: could not respond to agent stop remote desktop message, reason: %v\n", err)
 		}
@@ -409,7 +409,7 @@ func (a *Agent) StopRemoteDesktopSubscribe() error {
 func (a *Agent) InstallPackageSubscribe() error {
 	_, err := a.NATSConnection.Subscribe("agent.installpackage."+a.Config.UUID, func(msg *nats.Msg) {
 
-		action := openuem_nats.DeployAction{}
+		action := scnorion_nats.DeployAction{}
 		err := json.Unmarshal(msg.Data, &action)
 		if err != nil {
 			log.Printf("[ERROR]: could not get the package id to install, reason: %v\n", err)
@@ -457,7 +457,7 @@ func (a *Agent) InstallPackageSubscribe() error {
 func (a *Agent) UpdatePackageSubscribe() error {
 	_, err := a.NATSConnection.Subscribe("agent.updatepackage."+a.Config.UUID, func(msg *nats.Msg) {
 
-		action := openuem_nats.DeployAction{}
+		action := scnorion_nats.DeployAction{}
 		err := json.Unmarshal(msg.Data, &action)
 		if err != nil {
 			log.Printf("[ERROR]: could not get the package id to update, reason: %v\n", err)
@@ -507,7 +507,7 @@ func (a *Agent) UpdatePackageSubscribe() error {
 func (a *Agent) UninstallPackageSubscribe() error {
 	_, err := a.NATSConnection.Subscribe("agent.uninstallpackage."+a.Config.UUID, func(msg *nats.Msg) {
 
-		action := openuem_nats.DeployAction{}
+		action := scnorion_nats.DeployAction{}
 		err := json.Unmarshal(msg.Data, &action)
 		if err != nil {
 			log.Printf("[ERROR]: could not get the package id to uninstall, reason: %v\n", err)
@@ -552,7 +552,7 @@ func (a *Agent) UninstallPackageSubscribe() error {
 func (a *Agent) AgentSettingsSubscribe() error {
 	_, err := a.NATSConnection.Subscribe("agent.settings."+a.Config.UUID, func(msg *nats.Msg) {
 
-		data := openuem_nats.AgentSetting{}
+		data := scnorion_nats.AgentSetting{}
 		err := json.Unmarshal(msg.Data, &data)
 		if err != nil {
 			log.Printf("[ERROR]: could not get the agent's settings sent from the console, reason: %v\n", err)
@@ -608,7 +608,7 @@ func (a *Agent) AgentSettingsSubscribe() error {
 	return nil
 }
 
-func (a *Agent) SendDeployResult(r *openuem_nats.DeployAction) error {
+func (a *Agent) SendDeployResult(r *scnorion_nats.DeployAction) error {
 	data, err := json.Marshal(r)
 	if err != nil {
 		return err
@@ -627,7 +627,7 @@ func (a *Agent) SendDeployResult(r *openuem_nats.DeployAction) error {
 	return nil
 }
 
-func ReadDeploymentNotACK() ([]openuem_nats.DeployAction, error) {
+func ReadDeploymentNotACK() ([]scnorion_nats.DeployAction, error) {
 	cwd, err := Getwd()
 	if err != nil {
 		return nil, err
@@ -654,10 +654,10 @@ func ReadDeploymentNotACK() ([]openuem_nats.DeployAction, error) {
 		return jActions.Actions, nil
 	}
 
-	return []openuem_nats.DeployAction{}, nil
+	return []scnorion_nats.DeployAction{}, nil
 }
 
-func SaveDeploymentsNotACK(actions []openuem_nats.DeployAction) error {
+func SaveDeploymentsNotACK(actions []scnorion_nats.DeployAction) error {
 	cwd, err := Getwd()
 	if err != nil {
 		return err
@@ -686,8 +686,8 @@ func SaveDeploymentsNotACK(actions []openuem_nats.DeployAction) error {
 	return nil
 }
 
-func SaveDeploymentNotACK(action openuem_nats.DeployAction) error {
-	var actions []openuem_nats.DeployAction
+func SaveDeploymentNotACK(action scnorion_nats.DeployAction) error {
+	var actions []scnorion_nats.DeployAction
 	cwd, err := Getwd()
 	if err != nil {
 		return err
@@ -854,7 +854,7 @@ func (a *Agent) GetRemoteConfig() error {
 		return fmt.Errorf("NATS connection is not ready")
 	}
 
-	remoteConfigMsg := openuem_nats.RemoteConfigRequest{
+	remoteConfigMsg := scnorion_nats.RemoteConfigRequest{
 		AgentID:  a.Config.UUID,
 		TenantID: a.Config.TenantID,
 		SiteID:   a.Config.SiteID,
@@ -874,7 +874,7 @@ func (a *Agent) GetRemoteConfig() error {
 		return fmt.Errorf("no config was received")
 	}
 
-	config := openuem_nats.Config{}
+	config := scnorion_nats.Config{}
 
 	if err := json.Unmarshal(msg.Data, &config); err != nil {
 		return err
@@ -915,7 +915,7 @@ func (a *Agent) JetStreamAgentHandler(msg jetstream.Msg) {
 }
 
 func (a *Agent) SetDefaultPrinter() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.defaultprinter."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.defaultprinter."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 		printerName := string(msg.Data)
 		if printerName == "" {
 			log.Println("[ERROR]: printer name cannot be empty")
@@ -943,7 +943,7 @@ func (a *Agent) SetDefaultPrinter() error {
 }
 
 func (a *Agent) RemovePrinter() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.removeprinter."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.removeprinter."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 		printerName := string(msg.Data)
 		if printerName == "" {
 			log.Println("[ERROR]: printer name cannot be empty")
@@ -972,7 +972,7 @@ func (a *Agent) RemovePrinter() error {
 
 func (a *Agent) SendWinGetCfgProfileApplicationReport(profileID int, agentID string, success bool, errData string) error {
 	// Notify worker if application was succesful or not
-	deployment := openuem_nats.WingetCfgReport{
+	deployment := scnorion_nats.WingetCfgReport{
 		ProfileID: profileID,
 		AgentID:   agentID,
 		Success:   success,
@@ -992,7 +992,7 @@ func (a *Agent) SendWinGetCfgProfileApplicationReport(profileID int, agentID str
 }
 
 func (a *Agent) StartRustDeskSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.rustdesk.start."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.rustdesk.start."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 
 		rd := rustdesk.New()
 
@@ -1035,7 +1035,7 @@ func (a *Agent) StartRustDeskSubscribe() error {
 }
 
 func (a *Agent) StopRustDeskSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.rustdesk.stop."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.rustdesk.stop."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 		rd := rustdesk.New()
 		if err := rd.GetInstallationInfo(); err != nil {
 			rustdesk.RustDeskRespond(msg, "", err.Error())

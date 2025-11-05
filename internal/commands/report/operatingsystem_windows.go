@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 	"golang.org/x/sys/windows/registry"
 )
 
@@ -24,7 +24,7 @@ func (r *Report) getOSInfo(debug bool) error {
 	if debug {
 		log.Println("[DEBUG]: os info (operating system info) has been requested")
 	}
-	r.OperatingSystem = openuem_nats.OperatingSystem{}
+	r.OperatingSystem = scnorion_nats.OperatingSystem{}
 	if err := r.getOperatingSystemInfo(debug); err != nil {
 		log.Printf("[ERROR]: could not get operating system info from WMI Win32_OperatingSystem: %v", err)
 		return err

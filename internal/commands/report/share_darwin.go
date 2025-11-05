@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"regexp"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getSharesInfo() error {
@@ -30,7 +30,7 @@ func (r *Report) getShares() {
 		if i%2 != 0 {
 			continue
 		}
-		myShare := openuem_nats.Share{}
+		myShare := scnorion_nats.Share{}
 		myShare.Description = v[1]
 		r.Shares = append(r.Shares, myShare)
 	}

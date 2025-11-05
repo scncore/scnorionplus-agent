@@ -3,7 +3,7 @@ package report
 import (
 	"log"
 
-	remotedesktop "github.com/open-uem/openuem-agent/internal/commands/remote-desktop"
+	remotedesktop "github.com/scncore/scnorion-agent/internal/commands/remote-desktop"
 )
 
 func (r *Report) getRemoteDesktopInfo(debug bool) error {

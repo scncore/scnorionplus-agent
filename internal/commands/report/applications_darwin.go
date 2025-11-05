@@ -8,12 +8,12 @@ import (
 	"os/exec"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getApplicationsInfo(debug bool) error {
 	var appData SPApplicationsDataType
-	r.Applications = []openuem_nats.Application{}
+	r.Applications = []scnorion_nats.Application{}
 
 	if debug {
 		log.Println("[DEBUG]: applications info has been requested")
@@ -33,7 +33,7 @@ func (r *Report) getApplicationsInfo(debug bool) error {
 			continue
 		}
 
-		app := openuem_nats.Application{}
+		app := scnorion_nats.Application{}
 		app.Name = a.Name
 		app.Version = a.Version
 		if len(a.SignedBy) > 0 {

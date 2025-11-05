@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func RunReport(agentId string, enabled, debug bool, vncProxyPort, sftpPort, ipAddress string, sftpDisabled, remoteAssistanceDisabled bool, tenantID string, siteID string) (*Report, error) {
@@ -35,7 +35,7 @@ func RunReport(agentId string, enabled, debug bool, vncProxyPort, sftpPort, ipAd
 	report.Tenant = tenantID
 	report.Site = siteID
 
-	report.Release = openuem_nats.Release{
+	report.Release = scnorion_nats.Release{
 		Version: VERSION,
 		Arch:    runtime.GOARCH,
 		Os:      runtime.GOOS,
@@ -201,7 +201,7 @@ func RunReport(agentId string, enabled, debug bool, vncProxyPort, sftpPort, ipAd
 }
 
 func isCertificateReady() bool {
-	wd := "/etc/openuem-agent"
+	wd := "/etc/scnorion-agent"
 
 	certPath := filepath.Join(wd, "certificates", "server.cer")
 	_, err := os.Stat(certPath)

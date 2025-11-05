@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	openuem_utils "github.com/open-uem/utils"
+	scnorion_utils "github.com/scncore/utils"
 	"gopkg.in/ini.v1"
 )
 
@@ -14,7 +14,7 @@ func (r *Report) getUpdateTaskInfo(debug bool) error {
 	}
 
 	// Open ini file
-	configFile := openuem_utils.GetAgentConfigFile()
+	configFile := scnorion_utils.GetAgentConfigFile()
 	cfg, err := ini.Load(configFile)
 	if err != nil {
 		return err

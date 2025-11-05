@@ -8,7 +8,7 @@ import (
 	wu "github.com/ceshihao/windowsupdate"
 	"github.com/go-ole/go-ole"
 	"github.com/go-ole/go-ole/oleutil"
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 // Ref: https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-automaticupdatesnotificationlevel
@@ -201,10 +201,10 @@ func (r *Report) getUpdatesHistory() error {
 		return err
 	}
 
-	updates := []openuem_nats.Update{}
+	updates := []scnorion_nats.Update{}
 	for _, entry := range result {
 		if entry.ClientApplicationID == "MoUpdateOrchestrator" {
-			update := openuem_nats.Update{
+			update := scnorion_nats.Update{
 				Title:      entry.Title,
 				Date:       *entry.Date,
 				SupportURL: entry.SupportUrl,

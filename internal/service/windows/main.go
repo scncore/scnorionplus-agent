@@ -5,7 +5,7 @@ package main
 import (
 	"log"
 
-	"github.com/open-uem/openuem-agent/internal/logger"
+	"github.com/scncore/scnorion-agent/internal/logger"
 	"golang.org/x/sys/windows/svc"
 )
 
@@ -17,7 +17,7 @@ func main() {
 	s := NewService(l)
 
 	// Run service
-	err := svc.Run("openuem-agent", s)
+	err := svc.Run("scnorion-agent", s)
 	if err != nil {
 		log.Fatalf("could not run service: %v", err)
 	}

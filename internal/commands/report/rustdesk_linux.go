@@ -8,7 +8,7 @@ import (
 	"os/user"
 	"path/filepath"
 
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
 )
 
 func (r *Report) hasRustDesk(debug bool) {
@@ -21,8 +21,8 @@ func (r *Report) hasRustDesk(debug bool) {
 	if _, err := os.Stat(commonPath); err == nil {
 		r.HasRustDesk = true
 	} else {
-		flatpakOpenUEMPath := "/var/lib/flatpak/exports/bin/com.rustdesk.RustDesk"
-		if _, err := os.Stat(flatpakOpenUEMPath); err == nil {
+		flatpakscnorionPath := "/var/lib/flatpak/exports/bin/com.rustdesk.RustDesk"
+		if _, err := os.Stat(flatpakscnorionPath); err == nil {
 			r.HasRustDesk = true
 		} else {
 			// Get current user logged in
@@ -52,8 +52,8 @@ func (r *Report) hasRustDeskService(debug bool) {
 }
 
 func (r *Report) isFlatpakRustDesk() {
-	flatpakOpenUEMPath := "/var/lib/flatpak/exports/bin/com.rustdesk.RustDesk"
-	if _, err := os.Stat(flatpakOpenUEMPath); err == nil {
+	flatpakscnorionPath := "/var/lib/flatpak/exports/bin/com.rustdesk.RustDesk"
+	if _, err := os.Stat(flatpakscnorionPath); err == nil {
 		r.IsFlatpakRustDesk = true
 		return
 	}

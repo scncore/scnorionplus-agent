@@ -7,12 +7,12 @@ import (
 	"log"
 	"os/exec"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getMonitorsInfo(debug bool) error {
 	var displaysData SPDisplaysDataType
-	r.Monitors = []openuem_nats.Monitor{}
+	r.Monitors = []scnorion_nats.Monitor{}
 
 	if debug {
 		log.Println("[DEBUG]: monitors info has been requested")
@@ -29,7 +29,7 @@ func (r *Report) getMonitorsInfo(debug bool) error {
 
 	for _, data := range displaysData.SPDisplaysDataType {
 		for _, display := range data.DisplaysNDrvs {
-			myMonitor := openuem_nats.Monitor{}
+			myMonitor := scnorion_nats.Monitor{}
 			myMonitor.Model = display.Name
 			myMonitor.Manufacturer = display.VendorID
 			myMonitor.Serial = display.SerialNumber

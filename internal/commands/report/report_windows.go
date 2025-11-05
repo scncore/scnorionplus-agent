@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/doncicuto/comshim"
-	openuem_nats "github.com/open-uem/nats"
-	openuem_utils "github.com/open-uem/utils"
+	scnorion_nats "github.com/scncore/nats"
+	scnorion_utils "github.com/scncore/utils"
 	"golang.org/x/sys/windows"
 	"gopkg.in/ini.v1"
 )
@@ -60,7 +60,7 @@ func RunReport(agentId string, enabled, debug bool, vncProxyPort, sftpPort, ipAd
 
 	// Check if a restart is still required
 	// Get conf file
-	configFile := openuem_utils.GetAgentConfigFile()
+	configFile := scnorion_utils.GetAgentConfigFile()
 
 	// Open ini file
 	cfg, err := ini.Load(configFile)
@@ -80,7 +80,7 @@ func RunReport(agentId string, enabled, debug bool, vncProxyPort, sftpPort, ipAd
 		return nil, err
 	}
 
-	report.Release = openuem_nats.Release{
+	report.Release = scnorion_nats.Release{
 		Version: VERSION,
 		Arch:    runtime.GOARCH,
 		Os:      runtime.GOOS,
@@ -255,7 +255,7 @@ func RunReport(agentId string, enabled, debug bool, vncProxyPort, sftpPort, ipAd
 }
 
 func isCertificateReady() bool {
-	wd, err := openuem_utils.GetWd()
+	wd, err := scnorion_utils.GetWd()
 	if err != nil {
 		log.Println("[ERROR]: could not get working directory")
 		return false

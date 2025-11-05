@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/open-uem/nats"
+	"github.com/scncore/nats"
 )
 
 func (r *Report) getSystemUpdateInfo() error {

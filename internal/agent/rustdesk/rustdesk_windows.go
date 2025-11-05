@@ -12,10 +12,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/open-uem/nats"
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
-	openuem_utils "github.com/open-uem/utils"
 	"github.com/pelletier/go-toml/v2"
+	"github.com/scncore/nats"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
+	scnorion_utils "github.com/scncore/utils"
 	"golang.org/x/sys/windows/svc"
 )
 
@@ -98,13 +98,13 @@ func (cfg *RustDeskConfig) Configure(config []byte) error {
 	}
 
 	// Restart RustDesk service after configuration changes
-	if err := openuem_utils.WindowsSvcControl("RustDesk", svc.Stop, svc.Stopped); err != nil {
+	if err := scnorion_utils.WindowsSvcControl("RustDesk", svc.Stop, svc.Stopped); err != nil {
 		log.Printf("[ERROR]: could not stop RustDesk service, reason: %v\n", err)
 		return err
 	}
 
 	// Start service
-	if err := openuem_utils.WindowsStartService("RustDesk"); err != nil {
+	if err := scnorion_utils.WindowsStartService("RustDesk"); err != nil {
 		log.Printf("[ERROR]: could not start RustDesk service, reason: %v\n", err)
 		return err
 	}
@@ -156,13 +156,13 @@ func ConfigRollBack(username string, isFlatpak bool) error {
 	}
 
 	// Restart RustDesk service after configuration changes
-	if err := openuem_utils.WindowsSvcControl("RustDesk", svc.Stop, svc.Stopped); err != nil {
+	if err := scnorion_utils.WindowsSvcControl("RustDesk", svc.Stop, svc.Stopped); err != nil {
 		log.Printf("[ERROR]: could not stop RustDesk service, reason: %v\n", err)
 		return err
 	}
 
 	// Start service
-	if err := openuem_utils.WindowsStartService("RustDesk"); err != nil {
+	if err := scnorion_utils.WindowsStartService("RustDesk"); err != nil {
 		log.Printf("[ERROR]: could not start RustDesk service, reason: %v\n", err)
 		return err
 	}

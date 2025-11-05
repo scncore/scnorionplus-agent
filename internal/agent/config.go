@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	openuem_utils "github.com/open-uem/utils"
+	scnorion_utils "github.com/scncore/utils"
 	"gopkg.in/ini.v1"
 )
 
@@ -38,7 +38,7 @@ type Config struct {
 
 func (a *Agent) ReadConfig() error {
 	// Get conf file
-	configFile := openuem_utils.GetAgentConfigFile()
+	configFile := scnorion_utils.GetAgentConfigFile()
 
 	f, err := os.Open(configFile)
 	if err != nil {
@@ -151,7 +151,7 @@ func (a *Agent) ReadConfig() error {
 		a.Config.AgentCert = key.String()
 	}
 
-	_, err = openuem_utils.ReadPEMCertificate(a.Config.AgentCert)
+	_, err = scnorion_utils.ReadPEMCertificate(a.Config.AgentCert)
 	if err != nil {
 		log.Fatalf("[FATAL]: could not read agent certificate")
 	}
@@ -164,7 +164,7 @@ func (a *Agent) ReadConfig() error {
 		a.Config.AgentKey = key.String()
 	}
 
-	_, err = openuem_utils.ReadPEMPrivateKey(a.Config.AgentKey)
+	_, err = scnorion_utils.ReadPEMPrivateKey(a.Config.AgentKey)
 	if err != nil {
 		log.Fatalf("[FATAL]: could not read agent private key")
 	}
@@ -177,7 +177,7 @@ func (a *Agent) ReadConfig() error {
 		a.Config.CACert = key.String()
 	}
 
-	_, err = openuem_utils.ReadPEMCertificate(a.Config.CACert)
+	_, err = scnorion_utils.ReadPEMCertificate(a.Config.CACert)
 	if err != nil {
 		log.Fatalf("[FATAL]: could not read CA certificate")
 	}
@@ -189,7 +189,7 @@ func (a *Agent) ReadConfig() error {
 	} else {
 		a.Config.SFTPCert = key.String()
 	}
-	_, err = openuem_utils.ReadPEMCertificate(a.Config.SFTPCert)
+	_, err = scnorion_utils.ReadPEMCertificate(a.Config.SFTPCert)
 	if err != nil {
 		log.Println("[ERROR]: could not read sftp certificate")
 		a.Config.SFTPCert = ""
@@ -260,7 +260,7 @@ func (a *Agent) ReadConfig() error {
 
 func (c *Config) WriteConfig() error {
 	// Get conf file
-	configFile := openuem_utils.GetAgentConfigFile()
+	configFile := scnorion_utils.GetAgentConfigFile()
 
 	// Open ini file
 	cfg, err := ini.Load(configFile)
@@ -289,7 +289,7 @@ func (c *Config) WriteConfig() error {
 
 func (c *Config) ResetRestartRequiredFlag() error {
 	// Get conf file
-	configFile := openuem_utils.GetAgentConfigFile()
+	configFile := scnorion_utils.GetAgentConfigFile()
 
 	// Open ini file
 	cfg, err := ini.Load(configFile)
@@ -303,7 +303,7 @@ func (c *Config) ResetRestartRequiredFlag() error {
 
 func (c *Config) SetRestartRequiredFlag() error {
 	// Get conf file
-	configFile := openuem_utils.GetAgentConfigFile()
+	configFile := scnorion_utils.GetAgentConfigFile()
 
 	// Open ini file
 	cfg, err := ini.Load(configFile)

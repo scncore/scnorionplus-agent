@@ -11,7 +11,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/open-uem/wingetcfg/wingetcfg"
+	"github.com/scncore/wingetcfg/wingetcfg"
 )
 
 func InstallPackage(packageID string) error {
@@ -179,7 +179,7 @@ func RemovePowershellScriptsFromCfg(cfg *wingetcfg.WinGetCfg) map[string]PowerSh
 	scripts := map[string]PowerShellTask{}
 	validResources := []*wingetcfg.WinGetResource{}
 	for _, r := range cfg.Properties.Resources {
-		if r.Resource == wingetcfg.OpenUEMPowershell {
+		if r.Resource == wingetcfg.scnorionPowershell {
 			script, ok := r.Settings["Script"]
 			if ok {
 				name, ok := r.Settings["Name"]

@@ -7,7 +7,7 @@ import (
 	"log"
 	"os/exec"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 type SPSerialATADataTypes struct {
@@ -27,7 +27,7 @@ type SPSerialATADataType struct {
 
 func (r *Report) getPhysicalDisksInfo(debug bool) error {
 	var devices SPSerialATADataTypes
-	r.PhysicalDisks = []openuem_nats.PhysicalDisk{}
+	r.PhysicalDisks = []scnorion_nats.PhysicalDisk{}
 
 	if debug {
 		log.Println("[DEBUG]: physical disk info retrieval started")
@@ -47,7 +47,7 @@ func (r *Report) getPhysicalDisksInfo(debug bool) error {
 	}
 
 	for _, pd := range devices.Devices[0].Items {
-		disk := openuem_nats.PhysicalDisk{
+		disk := scnorion_nats.PhysicalDisk{
 			DeviceID:     pd.Name,
 			Model:        pd.Model,
 			SerialNumber: pd.Serial,

@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getLogicalDisksInfo(debug bool) error {
@@ -78,7 +78,7 @@ func (r *Report) getLogicalDisksFromMacOS(debug bool) error {
 				continue
 			}
 
-			myDisk := openuem_nats.LogicalDisk{}
+			myDisk := scnorion_nats.LogicalDisk{}
 			myDisk.Label = mountData[1]
 			myDisk.Filesystem = strings.TrimSuffix(strings.TrimPrefix(mountData[2], "("), ",")
 			myDisk.SizeInUnits = convertBytesToUnits(du.available + du.used)

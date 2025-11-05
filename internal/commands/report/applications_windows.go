@@ -8,7 +8,7 @@ import (
 	"log"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 	"golang.org/x/sys/windows/registry"
 )
 
@@ -16,13 +16,13 @@ func (r *Report) getApplicationsInfo(debug bool) error {
 	if debug {
 		log.Println("[DEBUG]: applications info has been requested")
 	}
-	r.Applications = []openuem_nats.Application{}
+	r.Applications = []scnorion_nats.Application{}
 	myApps, err := getApplications(debug)
 	if err != nil {
 		return err
 	}
 	for k, v := range myApps {
-		app := openuem_nats.Application{}
+		app := scnorion_nats.Application{}
 		app.Name = strings.TrimSpace(k)
 		app.Version = strings.TrimSpace(v.Version)
 		app.InstallDate = strings.TrimSpace(v.InstallDate)
@@ -33,8 +33,8 @@ func (r *Report) getApplicationsInfo(debug bool) error {
 }
 
 // TODO - Microsoft Store Apps can't be retrieved from registry
-func getApplications(debug bool) (map[string]openuem_nats.Application, error) {
-	applications := make(map[string]openuem_nats.Application)
+func getApplications(debug bool) (map[string]scnorion_nats.Application, error) {
+	applications := make(map[string]scnorion_nats.Application)
 
 	if err := getApplicationsFromRegistry(applications, registry.LOCAL_MACHINE, APPS, ""); err != nil {
 		if debug {
@@ -95,7 +95,7 @@ func getApplications(debug bool) (map[string]openuem_nats.Application, error) {
 	return applications, nil
 }
 
-func getApplicationsFromRegistry(applications map[string]openuem_nats.Application, hive registry.Key, key, sid string) error {
+func getApplicationsFromRegistry(applications map[string]scnorion_nats.Application, hive registry.Key, key, sid string) error {
 
 	if hive == registry.USERS {
 		key = fmt.Sprintf("%s\\%s", sid, key)
@@ -126,7 +126,7 @@ func getApplicationsFromRegistry(applications map[string]openuem_nats.Applicatio
 			}
 			installDate, _, _ := sk.GetStringValue("InstallDate")
 			publisher, _, _ := sk.GetStringValue("Publisher")
-			applications[displayName] = openuem_nats.Application{Version: displayVersion, InstallDate: installDate, Publisher: publisher}
+			applications[displayName] = scnorion_nats.Application{Version: displayVersion, InstallDate: installDate, Publisher: publisher}
 		}
 	}
 	return nil

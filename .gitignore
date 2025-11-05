@@ -1,12 +1,12 @@
 .vscode
-openuem.json
+scnorion.json
 *.exe
 *-log.txt
 *.log
 certificates
 agent-test
 pending_acks.json
-openuem-messenger
+scnorion-messenger
 pin.templ
-openuem-agent
+scnorion-agent
 badgerdb

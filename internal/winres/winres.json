@@ -11,7 +11,7 @@
           "name": "",
           "version": ""
         },
-        "description": "OpenUEM Agent",
+        "description": "scnorion Agent",
         "minimum-os": "win7",
         "execution-level": "as invoker",
         "ui-access": false,
@@ -47,7 +47,7 @@
             "LegalTrademarks": "",
             "OriginalFilename": "",
             "PrivateBuild": "",
-            "ProductName": "OpenUEM Agent",
+            "ProductName": "scnorion Agent",
             "ProductVersion": "0.1.0",
             "SpecialBuild": ""
           }

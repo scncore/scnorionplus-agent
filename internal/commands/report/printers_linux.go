@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 func (r *Report) getPrintersInfo(debug bool) error {
@@ -26,7 +26,7 @@ func (r *Report) getPrintersInfo(debug bool) error {
 }
 
 func (r *Report) getPrintersFromLinux() error {
-	r.Printers = []openuem_nats.Printer{}
+	r.Printers = []scnorion_nats.Printer{}
 
 	getDefaultPrinter := "LANG=en_US.UTF-8 lpstat -d | awk '{print $4}'"
 	out, err := exec.Command("bash", "-c", getDefaultPrinter).Output()
@@ -51,7 +51,7 @@ func (r *Report) getPrintersFromLinux() error {
 	ports := strings.Split(string(out), "\n")
 
 	for index, printer := range printers {
-		myPrinter := openuem_nats.Printer{}
+		myPrinter := scnorion_nats.Printer{}
 		if printer != "" {
 			myPrinter.Name = strings.TrimSpace(printer)
 			myPrinter.IsDefault = myPrinter.Name == defaultPrinter
@@ -68,7 +68,7 @@ func (r *Report) getPrintersFromLinux() error {
 	// reg := regexp.MustCompile(`Model: "\s*(.*?)\s*"`)
 	// matches := reg.FindAllStringSubmatch(string(out), -1)
 	// for _, v := range matches {
-	// 	myPrinter := openuem_nats.Printer{}
+	// 	myPrinter := scnorion_nats.Printer{}
 	// 	if v[1] == "" || v[1] == "0" {
 	// 		myPrinter.Name = "Unknown"
 	// 	} else {

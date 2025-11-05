@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 )
 
-func New() *OpenUEMLogger {
+func New() *scnorionLogger {
 	var err error
 
-	logger := OpenUEMLogger{}
+	logger := scnorionLogger{}
 
-	wd := "/var/log/openuem-agent"
+	wd := "/var/log/scnorion-agent"
 
 	if _, err := os.Stat(wd); os.IsNotExist(err) {
 		if err := os.MkdirAll(wd, 0660); err != nil {
@@ -21,7 +21,7 @@ func New() *OpenUEMLogger {
 		}
 	}
 
-	logFilename := "openuem-agent.log"
+	logFilename := "scnorion-agent.log"
 	logPath := filepath.Join(wd, logFilename)
 
 	logger.LogFile, err = os.OpenFile(logPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
@@ -30,7 +30,7 @@ func New() *OpenUEMLogger {
 	}
 
 	log.SetOutput(logger.LogFile)
-	log.SetPrefix("openuem-agent: ")
+	log.SetPrefix("scnorion-agent: ")
 	log.SetFlags(log.Ldate | log.Ltime)
 
 	return &logger

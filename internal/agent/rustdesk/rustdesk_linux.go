@@ -13,9 +13,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/open-uem/nats"
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
 	"github.com/pelletier/go-toml/v2"
+	"github.com/scncore/nats"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
 	"github.com/shirou/gopsutil/v3/process"
 )
 

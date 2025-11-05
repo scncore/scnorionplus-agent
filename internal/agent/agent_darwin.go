@@ -31,12 +31,12 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
-	openuem_nats "github.com/open-uem/nats"
-	rd "github.com/open-uem/openuem-agent/internal/commands/remote-desktop"
-	openuem_runtime "github.com/open-uem/openuem-agent/internal/commands/runtime"
-	"github.com/open-uem/openuem-agent/internal/commands/sftp"
-	ansiblecfg "github.com/open-uem/openuem-ansible-config/ansible"
-	openuem_utils "github.com/open-uem/utils"
+	scnorion_nats "github.com/scncore/nats"
+	rd "github.com/scncore/scnorion-agent/internal/commands/remote-desktop"
+	scnorion_runtime "github.com/scncore/scnorion-agent/internal/commands/runtime"
+	"github.com/scncore/scnorion-agent/internal/commands/sftp"
+	ansiblecfg "github.com/scncore/scnorion-ansible-config/ansible"
+	scnorion_utils "github.com/scncore/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -102,7 +102,7 @@ func (a *Agent) Start() {
 	}
 
 	// Try to connect to NATS server and start a reconnect job if failed
-	a.NATSConnection, err = openuem_nats.ConnectWithNATS(a.Config.NATSServers, a.Config.AgentCert, a.Config.AgentKey, a.Config.CACert)
+	a.NATSConnection, err = scnorion_nats.ConnectWithNATS(a.Config.NATSServers, a.Config.AgentCert, a.Config.AgentKey, a.Config.CACert)
 	if err != nil {
 		log.Printf("[ERROR]: %v", err)
 		a.startNATSConnectJob()
@@ -158,7 +158,7 @@ func (a *Agent) startNATSConnectJob() error {
 		),
 		gocron.NewTask(
 			func() {
-				a.NATSConnection, err = openuem_nats.ConnectWithNATS(a.Config.NATSServers, a.Config.AgentCert, a.Config.AgentKey, a.Config.CACert)
+				a.NATSConnection, err = scnorion_nats.ConnectWithNATS(a.Config.NATSServers, a.Config.AgentCert, a.Config.AgentKey, a.Config.CACert)
 				if err != nil {
 					return
 				}
@@ -183,7 +183,7 @@ func (a *Agent) startNATSConnectJob() error {
 }
 
 func (a *Agent) StartRemoteDesktopSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.startvnc."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.startvnc."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 
 		// Instantiate new vnc server, but first try to check if certificates are there
 		a.GetServerCertificate()
@@ -199,7 +199,7 @@ func (a *Agent) StartRemoteDesktopSubscribe() error {
 		}
 
 		// Unmarshal data
-		var rdConn openuem_nats.VNCConnection
+		var rdConn scnorion_nats.VNCConnection
 		if err := json.Unmarshal(msg.Data, &rdConn); err != nil {
 			log.Println("[ERROR]: could not unmarshall Remote Desktop connection")
 			return
@@ -220,13 +220,13 @@ func (a *Agent) StartRemoteDesktopSubscribe() error {
 	return nil
 }
 func (a *Agent) RebootSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.reboot."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.reboot."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 		log.Println("[INFO]: reboot request received")
 		if err := msg.Respond([]byte("Reboot!")); err != nil {
 			log.Printf("[ERROR]: could not respond to agent reboot message, reason: %v\n", err)
 		}
 
-		action := openuem_nats.RebootOrRestart{}
+		action := scnorion_nats.RebootOrRestart{}
 		if err := json.Unmarshal(msg.Data, &action); err != nil {
 			log.Printf("[ERROR]: could not unmarshal to agent reboot message, reason: %v\n", err)
 			return
@@ -251,14 +251,14 @@ func (a *Agent) RebootSubscribe() error {
 }
 
 func (a *Agent) PowerOffSubscribe() error {
-	_, err := a.NATSConnection.QueueSubscribe("agent.poweroff."+a.Config.UUID, "openuem-agent-management", func(msg *nats.Msg) {
+	_, err := a.NATSConnection.QueueSubscribe("agent.poweroff."+a.Config.UUID, "scnorion-agent-management", func(msg *nats.Msg) {
 		log.Println("[INFO]: power off request received")
 		if err := msg.Respond([]byte("Power Off!")); err != nil {
 			log.Printf("[ERROR]: could not respond to agent power off message, reason: %v\n", err)
 			return
 		}
 
-		action := openuem_nats.RebootOrRestart{}
+		action := scnorion_nats.RebootOrRestart{}
 		if err := json.Unmarshal(msg.Data, &action); err != nil {
 			log.Printf("[ERROR]: could not unmarshal to agent power off message, reason: %v\n", err)
 			return
@@ -290,7 +290,7 @@ func (a *Agent) RescheduleAnsibleConfigureTask() {
 func (a *Agent) NewConfigSubscribe() error {
 	_, err := a.NATSConnection.Subscribe("agent.newconfig", func(msg *nats.Msg) {
 
-		config := openuem_nats.Config{}
+		config := scnorion_nats.Config{}
 		err := json.Unmarshal(msg.Data, &config)
 		if err != nil {
 			log.Printf("[ERROR]: could not get new config to apply, reason: %v\n", err)
@@ -333,7 +333,7 @@ func (a *Agent) NewConfigSubscribe() error {
 
 func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 
-	data := openuem_nats.AgentCertificateData{}
+	data := scnorion_nats.AgentCertificateData{}
 
 	if err := json.Unmarshal(msg.Data(), &data); err != nil {
 		log.Printf("[ERROR]: could not unmarshal agent certificate data, reason: %v\n", err)
@@ -345,7 +345,7 @@ func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 		return
 	}
 
-	wd := "/etc/openuem-agent"
+	wd := "/etc/scnorion-agent"
 
 	if err := os.MkdirAll(filepath.Join(wd, "certificates"), 0660); err != nil {
 		log.Printf("[ERROR]: could not create certificates folder, reason: %v\n", err)
@@ -366,7 +366,7 @@ func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 		return
 	}
 
-	err = openuem_utils.SavePrivateKey(privateKey, keyPath)
+	err = scnorion_utils.SavePrivateKey(privateKey, keyPath)
 	if err != nil {
 		log.Printf("[ERROR]: could not save agent private key, reason: %v\n", err)
 		if err := msg.Ack(); err != nil {
@@ -377,7 +377,7 @@ func (a *Agent) AgentCertificateHandler(msg jetstream.Msg) {
 	log.Printf("[INFO]: Agent private key saved in %s", keyPath)
 
 	certPath := filepath.Join(wd, "certificates", "server.cer")
-	err = openuem_utils.SaveCertificate(data.CertBytes, certPath)
+	err = scnorion_utils.SaveCertificate(data.CertBytes, certPath)
 	if err != nil {
 		log.Printf("[ERROR]: could not save agent certificate, reason: %v\n", err)
 		if err := msg.Ack(); err != nil {
@@ -422,10 +422,10 @@ func (a *Agent) startCheckForAnsibleProfilesJob() error {
 
 func (a *Agent) GetServerCertificate() {
 
-	cwd := "/etc/openuem-agent"
+	cwd := "/etc/scnorion-agent"
 
 	serverCertPath := filepath.Join(cwd, "certificates", "server.cer")
-	_, err := openuem_utils.ReadPEMCertificate(serverCertPath)
+	_, err := scnorion_utils.ReadPEMCertificate(serverCertPath)
 	if err != nil {
 		log.Printf("[ERROR]: could not read server certificate")
 	} else {
@@ -433,7 +433,7 @@ func (a *Agent) GetServerCertificate() {
 	}
 
 	serverKeyPath := filepath.Join(cwd, "certificates", "server.key")
-	_, err = openuem_utils.ReadPEMPrivateKey(serverKeyPath)
+	_, err = scnorion_utils.ReadPEMPrivateKey(serverKeyPath)
 	if err != nil {
 		log.Printf("[ERROR]: could not read server private key")
 	} else {
@@ -448,7 +448,7 @@ func (a *Agent) GetUnixConfigureProfiles() {
 
 	profiles := []ProfileConfig{}
 
-	profileRequest := openuem_nats.CfgProfiles{
+	profileRequest := scnorion_nats.CfgProfiles{
 		AgentID: a.Config.UUID,
 	}
 
@@ -543,7 +543,7 @@ func (a *Agent) ApplyConfiguration(profileID int, config []byte) error {
 	}
 
 	// Get current user for brew commands
-	username, err := openuem_runtime.GetLoggedInUser()
+	username, err := scnorion_runtime.GetLoggedInUser()
 	if err != nil {
 		log.Printf("[ERROR]: could not find the logged in user, reason %v", err)
 		return err

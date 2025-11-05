@@ -8,8 +8,8 @@ import (
 	"log"
 	"os/exec"
 
-	"github.com/open-uem/openuem-agent/internal/commands/runtime"
-	openuem_utils "github.com/open-uem/utils"
+	"github.com/scncore/scnorion-agent/internal/commands/runtime"
+	scnorion_utils "github.com/scncore/utils"
 )
 
 func (rd *RemoteDesktopService) Start(pin string, notifyUser bool) {
@@ -127,7 +127,7 @@ func GetSupportedRemoteDesktopService(agentOS, sid, proxyPort string) (*RemoteDe
 				return nil
 			},
 			RemovePIN: func() error {
-				pin, err := openuem_utils.GenerateRandomPIN(8)
+				pin, err := scnorion_utils.GenerateRandomPIN(8)
 				if err != nil {
 					log.Printf("[ERROR]: could not generate random PIN, reason: %v\n", err)
 					return err
@@ -183,7 +183,7 @@ func notifyPINToUser(pin string) error {
 	}
 
 	// Reference: https://stackoverflow.com/questions/5588064/how-do-i-make-a-mac-terminal-pop-up-alert-applescript
-	args := []string{"-e", fmt.Sprintf(`display alert "OpenUEM Remote Assistance" message "PIN: %s"`, pin)}
+	args := []string{"-e", fmt.Sprintf(`display alert "scnorion Remote Assistance" message "PIN: %s"`, pin)}
 	if err := runtime.RunAsUser(username, "osascript", args, false); err != nil {
 		return err
 	}

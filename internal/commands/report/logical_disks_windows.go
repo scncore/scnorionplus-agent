@@ -8,7 +8,7 @@ import (
 	"log"
 	"strings"
 
-	openuem_nats "github.com/open-uem/nats"
+	scnorion_nats "github.com/scncore/nats"
 )
 
 type bitLockerStatus struct {
@@ -38,7 +38,7 @@ func (r *Report) getLogicalDisksFromWMI(debug bool) error {
 		return err
 	}
 	for _, v := range disksDst {
-		myDisk := openuem_nats.LogicalDisk{}
+		myDisk := scnorion_nats.LogicalDisk{}
 
 		if v.Size != 0 {
 			myDisk.Label = strings.TrimSpace(v.DeviceID)
